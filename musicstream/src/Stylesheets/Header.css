@@ -1,0 +1,9 @@
+.Mui-focused {
+    color: 0px solid #ffffff !important;
+}
+.MuiInput-underline:before {
+    border-bottom: 1px solid #ffffff !important;
+}
+.MuiInput-root:after {
+    opacity: 0%;
+}

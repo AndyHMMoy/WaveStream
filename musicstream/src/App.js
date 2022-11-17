@@ -29,10 +29,10 @@ function App() {
         <div className="waveStream">
         <script src="https://sdk.scdn.co/spotify-player.js"></script>
         <ThemeProvider theme={theme}>
-          <Header />
+          {/* <Header /> */}
             <Routes>
               <Route exact path="/" element={<Home />} />
-              <Route exact path="/callback" element={<Callback />} />
+              {/* <Route exact path="/callback" element={<Callback />} /> */}
             </Routes>
         </ThemeProvider>
         </div>
