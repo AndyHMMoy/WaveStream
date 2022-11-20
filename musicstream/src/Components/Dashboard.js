@@ -1,34 +1,22 @@
 import React from 'react'
-import useAuth from '../Hooks/useAuth';
 import { useEffect, useState } from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import spotifyWebApi from 'spotify-web-api-node';
 import TrackSearchResult from './TrackSearchResult';
 import Player from './Player';
-import { Container } from "react-bootstrap"
+import { Container, Col, Row } from "react-bootstrap"
+import NewRelease from './NewRelease';
 
 const spotifyApi = new spotifyWebApi({
     clientId: '24a3298301624748953767abdf60ec0a'
 });
 
-export default function Dashboard({ code }) {
+export default function Dashboard({ accessToken, query, term }) {
 
-    const accessToken = useAuth(code);
-
-    const [searchTerm, setSearchTerm] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
+    const [newReleases, setNewReleases] = useState([]);
     const [playingTrack, setPlayingTrack] = useState();
-
-    var authorizeURL = "https://accounts.spotify.com/en/authorize?client_id=24a3298301624748953767abdf60ec0a&response_type=code&redirect_uri=http://localhost:3000&scope=streaming%20user-read-email%20user-read-private%20user-library-read%20user-library-modify%20user-read-playback-state%20user-modify-playback-state";
 
     function chooseTrack(track) {
         setPlayingTrack(track)
-        setSearchTerm("")
     }
 
     useEffect(() => {
@@ -37,68 +25,55 @@ export default function Dashboard({ code }) {
     }, [accessToken])
 
     useEffect(() => {
-        if (!searchTerm) return setSearchResults([])
+        if (term) return
         if (!accessToken) return
-    
+
         let cancel = false
-        spotifyApi.searchTracks(searchTerm).then(res => {
-          if (cancel) return
-          setSearchResults(
-            res.body.tracks.items.map(track => {
-              const smallestAlbumImage = track.album.images.reduce(
-                (smallest, image) => {
-                  if (image.height < smallest.height) return image
-                  return smallest
-                },
-                track.album.images[0]
-              )
-    
-              return {
-                artist: track.artists[0].name,
-                title: track.name,
-                uri: track.uri,
-                albumUrl: smallestAlbumImage.url,
-              }
-            })
-          )
-        })
-    
+        spotifyApi.getNewReleases({ limit : 10, offset: 0, country: 'AU' }).then(res => {
+            if (cancel) return
+            setNewReleases(
+                res.body.albums.items.map(album => {
+                    const largestAlbumImage = album.images.reduce(
+                        (largest, image) => {
+                            if (image.height > largest.height) return image
+                                return largest
+                        },
+                        album.images[0]
+                    )
+
+                    return {
+                        artist: album.artists[0].name,
+                        name: album.name,
+                        uri: album.uri,
+                        albumUrl: largestAlbumImage.url
+                    }
+                })
+            )
+        });
         return () => (cancel = true)
-    }, [searchTerm, accessToken])
+    }, [term, accessToken]);
 
     return (
         <div>
-            <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-between' }}>
-                <AppBar position="static">
-                    <Toolbar>
-                        <div className='container-fluid'>
-                            <div className="d-flex justify-content-between">
-                                {/* App Name */}
-                                <div className="align-self-center">
-                                    <Typography variant="h6" component="div">WaveStream</Typography> 
-                                </div>
-                                {/* Search Bar */}
-                                <div className="align-self-center">
-                                    <TextField hiddenLabel id="filled-hidden-label-small" color="info" placeholder="Search for a song, artist or album" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} variant="standard" size="small" sx={{ minWidth: 500, input: { color: 'white' } }} />
-                                </div>
-                                {/* Refresh Token Button */}
-                                <div className="align-self-center">
-                                    <Button color="inherit" href={authorizeURL}>Refresh Token</Button> 
-                                </div>
-                            </div>
-                        </div>
-                    </Toolbar>
-                </AppBar> 
-            </Box>
             <Container fluid className="d-flex flex-column py-2" style={{ height: "90vh" }}>
                 <div className="flex-grow-1 my-2" style={{ overflowY: "auto" }}>
-                    {searchResults.map(track => (
-                    <TrackSearchResult
-                        track={track}
-                        key={track.uri}
-                        chooseTrack={chooseTrack}
-                    />
-                    ))}
+                    {/* Show results if exist, else show home page of dashboard */}
+                    {query && term !== '' ? query.map(track => (
+                    <TrackSearchResult track={track} key={track.uri} chooseTrack={chooseTrack} />
+                    )) : 
+                    <>
+                    <h1>What's new</h1>
+                    <div className="d-flex flex-row-nowrap-grow-1 mx-2 my-2" style={{overflowX: "auto"}}>
+                        {newReleases.map(album => (
+                            <Col className="mx-2">
+                                <NewRelease album={album} key={album.uri}/>
+                            </Col>
+                            
+                        ))}
+                    </div>
+                    <h1>Your Recommendations</h1>
+                    </>
+                    }
                 </div>
                 <div>
                     <Player accessToken={accessToken} trackUri={playingTrack?.uri} />
