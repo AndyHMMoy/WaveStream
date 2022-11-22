@@ -1,16 +1,13 @@
 import Button from '@mui/material/Button';
-import { Container } from '@mui/system';
-import { useEffect, useState } from 'react';
-import Header, { MemoizedHeader } from '../Fragments/Header';
+import { useState } from 'react';
+import Header from '../Fragments/Header';
 import Dashboard from './Dashboard';
 import useAuth from '../Hooks/useAuth';
 import React from 'react';
-import spotifyWebApi from 'spotify-web-api-node';
-
 import Backdrop from '@mui/material/Backdrop';
 
 const code = new URLSearchParams(window.location.search).get("code")
-const authorizeURL = "https://accounts.spotify.com/en/authorize?client_id=24a3298301624748953767abdf60ec0a&response_type=code&redirect_uri=http://localhost:3000&scope=streaming%20user-read-email%20user-read-private%20user-library-read%20user-library-modify%20user-read-playback-state%20user-modify-playback-state";
+const authorizeURL = "https://accounts.spotify.com/en/authorize?client_id=24a3298301624748953767abdf60ec0a&response_type=code&redirect_uri=http://localhost:3000&scope=streaming%20user-read-email%20user-top-read%20user-read-private%20user-library-read%20user-library-modify%20user-read-playback-state%20user-modify-playback-state";
 
 function Home() {
 

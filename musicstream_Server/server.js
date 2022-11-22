@@ -24,7 +24,7 @@ app.post('/refresh', (req, res) => {
             expiresIn: data.body.expiresIn
         })
     }).catch(err => {
-        console.log(err)
+        console.log("Refresh error" + err)
         res.sendStatus(400);
     });
 
@@ -45,7 +45,7 @@ app.post('/login', (req, res) => {
             expiresIn: data.body.expires_in
         })
     }).catch(err => {
-        console.log(err)
+        console.log("Login error" + err)
         res.sendStatus(400);
     })
 });
