@@ -4,8 +4,7 @@ import spotifyWebApi from 'spotify-web-api-node';
 import TrackSearchResult from './TrackSearchResult';
 import Player from './Player';
 import { Container, Col } from "react-bootstrap"
-import NewRelease from './NewRelease';
-import Recommendations from './Recommendations';
+import DashboardContent from './DashboardContent';
 
 const spotifyApi = new spotifyWebApi({
     clientId: '24a3298301624748953767abdf60ec0a'
@@ -98,11 +97,23 @@ export default function Dashboard({ accessToken, query, term }) {
                         },
                         album.album.images[0]
                     )
+                    var tracks = [];
+                    spotifyApi.getAlbumTracks(album.album.id).then(res => {
+                        res.body.items.map(track => {
+                            tracks.push({ 
+                                artist: track.artists[0].name, 
+                                name: track.name, 
+                                uri: track.uri, 
+                                albumUrl: largestAlbumImage
+                            });
+                        })
+                    })
                     return {
                         artist: album.album.artists[0].name,
                         name: album.album.name,
                         uri: album.album.uri,
-                        albumUrl: largestAlbumImage.url
+                        albumUrl: largestAlbumImage.url,
+                        tracks: tracks
                     }
                 })
             )
@@ -113,27 +124,27 @@ export default function Dashboard({ accessToken, query, term }) {
 
     return (
         <div>
-            <Container fluid className="d-flex flex-column py-2" style={{ height: "90vh" }}>
+            <Container fluid className="d-flex flex-column py-2" style={{ height: "91vh" }}>
                 <div className="flex-grow-1 my-2" style={{ overflowY: "auto" }}>
                     {/* Show results if exist, else show home page of dashboard */}
-                    {query && term !== '' ? query.map(track => (
+                    {query && term !== '' ? query.map((track, index) => (
                     <TrackSearchResult track={track} key={track.uri} chooseTrack={chooseTrack} />
                     )) : 
                     <>
-                    <h1>What's new</h1>
+                    <h1 className="mt-4 ms-4">What's new</h1>
                     <div className="d-flex flex-row-nowrap-grow-1 mx-2 my-2" style={{overflowX: "auto"}}>
-                        {newReleases.map(album => (
+                        {newReleases.map((album, index) => (
                             <Col className="mx-2">
-                                <NewRelease accessToken={accessToken} album={album} key={album.uri} chooseTrack={chooseTrack}/>
+                                <DashboardContent album={album} key={album.uri} chooseTrack={chooseTrack}/>
                             </Col>
                             
                         ))}
                     </div>
-                    <h1>Your Recommendations</h1>
+                    <h1 className="mt-4 ms-4">Your Recommendations</h1>
                     <div className="d-flex flex-row-nowrap-grow-1 mx-2 my-2" style={{overflowX: "auto"}}>
-                        {recommendations.map(album => (
+                        {recommendations.map((album, index) => (
                             <Col className="mx-2">
-                                <Recommendations album={album} key={album.uri} chooseTrack={chooseTrack}/>
+                                <DashboardContent album={album} key={album.uri} chooseTrack={chooseTrack}/>
                             </Col>
                         ))}
                     </div>

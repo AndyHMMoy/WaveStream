@@ -14,9 +14,6 @@ export default function Player({ accessToken, trackUri }) {
     }
   }, [trackUri])
 
-  console.log(trackUri);
-  console.log(isAlbum)
-
   if (!accessToken) return null
   return (
     <div>
