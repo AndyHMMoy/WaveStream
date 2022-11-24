@@ -9,6 +9,8 @@ import CloseIcon from '@mui/icons-material/Close';
 
 export default function AlbumDetails({album, isDialogOpened, handleCloseDialog, chooseTrack}) {
 
+  const format = require('format-duration')
+
   const [fullWidth, setFullWidth] = useState(true);
   const [maxWidth] = useState("lg");
 
@@ -55,19 +57,30 @@ export default function AlbumDetails({album, isDialogOpened, handleCloseDialog, 
         <BootstrapDialogTitle>
           <div className="d-flex flex-row bd-highlight mb-3 align-items-center">
             <img src={album.albumUrl} className="img-thumbnail me-2" alt="" style={{ height: "100px", width: "100px" }} />
-            {album.name}
+            <div className="ms-2">
+              <div>{album.name}</div>
+              <div className="text-muted">{album.artist}</div>
+            </div>
           </div>
         </BootstrapDialogTitle>
         <DialogContent dividers>
           {
             album.tracks.map((track, index) => {
               return (
-                <div className="d-flex m-2 align-items-center" style={{ cursor: "pointer" }} onClick={() => handlePlay(track)}>
-                  <div className="ml-3">
-                    <div>{track.name}</div>
-                    <div className="text-muted">{track.artist}</div>
+                // <div className="d-flex m-2 align-items-center" style={{ cursor: "pointer" }} onClick={() => handlePlay(track)}>
+                  <div className="m-2" style={{ cursor: "pointer" }} onClick={() => handlePlay(track)}>
+                    <div className="row">
+                      <div className="ml-3 col-11">
+                        <div>{track.name}</div>
+                        <div className="text-muted">{track.artist}</div>
+                      </div>
+                      <div className="col-1">
+                        <div>{format(track.duration)}</div>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                  
+                // </div>
               )
             })
           }

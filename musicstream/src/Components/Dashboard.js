@@ -2,6 +2,8 @@ import React from 'react'
 import { useEffect, useState } from 'react';
 import spotifyWebApi from 'spotify-web-api-node';
 import TrackSearchResult from './TrackSearchResult';
+import AlbumSearchResult from './AlbumSearchResult';
+import ArtistSearchResult from './ArtistSearchResult';
 import Player from './Player';
 import { Container, Col } from "react-bootstrap"
 import DashboardContent from './DashboardContent';
@@ -10,7 +12,7 @@ const spotifyApi = new spotifyWebApi({
     clientId: '24a3298301624748953767abdf60ec0a'
 });
 
-export default function Dashboard({ accessToken, query, term }) {
+export default function Dashboard({ accessToken, trackQuery, artistQuery, albumQuery, term }) {
 
     const [newReleases, setNewReleases] = useState([]);
     const [recommendations, setRecommendations] = useState([]);
@@ -61,7 +63,8 @@ export default function Dashboard({ accessToken, query, term }) {
                                 artist: track.artists[0].name, 
                                 name: track.name, 
                                 uri: track.uri, 
-                                albumUrl: largestAlbumImage
+                                albumUrl: largestAlbumImage,
+                                duration: track.duration_ms
                             });
                         })
                     })
@@ -104,7 +107,8 @@ export default function Dashboard({ accessToken, query, term }) {
                                 artist: track.artists[0].name, 
                                 name: track.name, 
                                 uri: track.uri, 
-                                albumUrl: largestAlbumImage
+                                albumUrl: largestAlbumImage,
+                                duration: track.duration_ms
                             });
                         })
                     })
@@ -124,30 +128,57 @@ export default function Dashboard({ accessToken, query, term }) {
 
     return (
         <div>
-            <Container fluid className="d-flex flex-column py-2" style={{ height: "91vh" }}>
+            <Container fluid className="d-flex flex-column py-2" style={{ height: "93vh" }}>
                 <div className="flex-grow-1 my-2" style={{ overflowY: "auto" }}>
                     {/* Show results if exist, else show home page of dashboard */}
-                    {query && term !== '' ? query.map((track, index) => (
-                    <TrackSearchResult track={track} key={track.uri} chooseTrack={chooseTrack} />
-                    )) : 
+                    
+                    {albumQuery && term !== '' ? 
+                        <>
+                            <h1>Albums</h1>
+                            <div className="d-flex flex-row-nowrap-grow-1 mx-2 my-2" style={{overflowX: "auto"}}>
+                                {albumQuery.map((album, index) => (
+                                    <AlbumSearchResult album={album} key={album.uri} chooseTrack={chooseTrack} />
+                                ))}
+                            </div>
+                        </>
+                    : null}
+                    
+                    {artistQuery && term !== '' ? 
+                        <>
+                            <h1>Artists</h1>
+                            <div className="d-flex flex-row-nowrap-grow-1 mx-2 my-2" style={{overflowX: "auto"}}>                            
+                                {artistQuery.map((artist, index) => (
+                                    <ArtistSearchResult artist={artist} key={artist.uri} chooseTrack={chooseTrack} />
+                                ))}
+                            </div>
+                        </>
+                    : null}
+                    
+                    {trackQuery && term !== '' ? 
+                        <>
+                            <h1>Tracks</h1>
+                            {trackQuery.map((track, index) => (  
+                                <TrackSearchResult track={track} key={track.uri} chooseTrack={chooseTrack} />
+                            ))}
+                        </>
+                    : 
                     <>
-                    <h1 className="mt-4 ms-4">What's new</h1>
-                    <div className="d-flex flex-row-nowrap-grow-1 mx-2 my-2" style={{overflowX: "auto"}}>
-                        {newReleases.map((album, index) => (
-                            <Col className="mx-2">
-                                <DashboardContent album={album} key={album.uri} chooseTrack={chooseTrack}/>
-                            </Col>
-                            
-                        ))}
-                    </div>
-                    <h1 className="mt-4 ms-4">Your Recommendations</h1>
-                    <div className="d-flex flex-row-nowrap-grow-1 mx-2 my-2" style={{overflowX: "auto"}}>
-                        {recommendations.map((album, index) => (
-                            <Col className="mx-2">
-                                <DashboardContent album={album} key={album.uri} chooseTrack={chooseTrack}/>
-                            </Col>
-                        ))}
-                    </div>
+                        <h1 className="mt-4 ms-4">What's new</h1>
+                        <div className="d-flex flex-row-nowrap-grow-1 mx-2 my-2" style={{overflowX: "auto"}}>
+                            {newReleases.map((album, index) => (
+                                <Col className="mx-2">
+                                    <DashboardContent album={album} key={album.uri} chooseTrack={chooseTrack}/>
+                                </Col>
+                            ))}
+                        </div>
+                        <h1 className="mt-4 ms-4">Your Recommendations</h1>
+                        <div className="d-flex flex-row-nowrap-grow-1 mx-2 my-2" style={{overflowX: "auto"}}>
+                            {recommendations.map((album, index) => (
+                                <Col className="mx-2">
+                                    <DashboardContent album={album} key={album.uri} chooseTrack={chooseTrack}/>
+                                </Col>
+                            ))}
+                        </div>
                     </>
                     }
                 </div>

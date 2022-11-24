@@ -12,15 +12,17 @@ const authorizeURL = "https://accounts.spotify.com/en/authorize?client_id=24a329
 function Home() {
 
   const accessToken = useAuth(code);
-  const [searchResults, setSearchResults] = useState([]);
+  const [trackSearchResults, setTrackSearchResults] = useState([]);
+  const [artistSearchResults, setArtistSearchResults] = useState([]);
+  const [albumSearchResults, setAlbumSearchResults] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
   return(
     <div>
       {code ? 
         <>
-        <Header accessToken = {accessToken} onQuery = {setSearchResults} termChange = {setSearchTerm} />
-        <Dashboard accessToken = {accessToken} query = {searchResults} term = {searchTerm} /> 
+        <Header accessToken = {accessToken} onTrackQuery = {setTrackSearchResults} onArtistQuery = {setArtistSearchResults} onAlbumQuery = {setAlbumSearchResults} termChange = {setSearchTerm} />
+        <Dashboard accessToken = {accessToken} trackQuery = {trackSearchResults} artistQuery = {artistSearchResults} albumQuery = {albumSearchResults} term = {searchTerm} /> 
         </>: 
         <Backdrop open sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} >
           <Button color="inherit" href={authorizeURL}>Login to Spotify</Button>
