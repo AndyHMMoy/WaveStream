@@ -1,10 +1,15 @@
-import { createContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import ShuffleIcon from '@mui/icons-material/Shuffle';
+import RepeatIcon from '@mui/icons-material/Repeat';
+import RepeatOneIcon from '@mui/icons-material/RepeatOne';
 import spotifyWebApi from 'spotify-web-api-node';
 import React from 'react';
 import '../Stylesheets/Header.css';
@@ -13,24 +18,46 @@ const spotifyApi = new spotifyWebApi({
     clientId: '24a3298301624748953767abdf60ec0a'
 });
 
-export default function Header({ accessToken, onTrackQuery, onArtistQuery, onAlbumQuery, termChange }) { 
+export default function Header({ accessToken, onTrackQuery, onArtistQuery, onAlbumQuery, onSetPlaylistPage, termChange, shuffleChange, shuffleStatus, repeatChange, repeatStatus }) { 
 
     const [searchTerm, setSearchTerm] = useState('');
     const [trackSearchResults, setTrackSearchResults] = useState([]);
     const [artistSearchResults, setArtistSearchResults] = useState([]);
     const [albumSearchResults, setAlbumSearchResults] = useState([]);
+    const [username, setUsername] = useState([]);
 
 
     // Create the authorization URL
-    var authorizeURL = "https://accounts.spotify.com/en/authorize?client_id=24a3298301624748953767abdf60ec0a&response_type=code&redirect_uri=http://localhost:3000&scope=streaming%20user-read-email%20user-read-private%20user-library-read%20user-library-modify%20user-read-playback-state%20user-modify-playback-state";
+    var authorizeURL = "https://accounts.spotify.com/en/authorize?client_id=24a3298301624748953767abdf60ec0a&response_type=code&redirect_uri=http://localhost:3000&scope=streaming%20user-read-email%20user-top-read%20playlist-read-private%20playlist-read-collaborative%20user-read-private%20user-library-read%20user-library-modify%20user-read-playback-state%20user-modify-playback-state";
+
+    const backToHome = () => {
+      setSearchTerm("")
+      onSetPlaylistPage(false)
+    }
+
+    const handleRepeat = () => {
+      if (repeatStatus === "off") {
+        repeatChange("context");
+      } else if (repeatStatus === "context") {
+        repeatChange("track");
+      } else {
+        repeatChange("off");
+      }
+    }
 
     useEffect(() => {
       if (!accessToken) return;
       spotifyApi.setAccessToken(accessToken)
+      spotifyApi.getMe().then(res => {
+        setUsername(res.body.id);
+      })
     }, [accessToken])
 
     useEffect(() => {
       termChange(searchTerm);
+      if (searchTerm !== '') {
+        onSetPlaylistPage(false)
+      }
       if (!searchTerm) return setTrackSearchResults([]), setArtistSearchResults([]), setAlbumSearchResults([])
       if (!accessToken) return
   
@@ -88,7 +115,6 @@ export default function Header({ accessToken, onTrackQuery, onArtistQuery, onAlb
               },
               album.images[0]
             )
-            console.log(album)
             var tracks = [];
             spotifyApi.getAlbumTracks(album.id).then(res => {
                 res.body.items.map(track => {
@@ -122,16 +148,23 @@ export default function Header({ accessToken, onTrackQuery, onArtistQuery, onAlb
                     <div className='container-fluid'>
                         <div className="d-flex justify-content-between">
                             {/* App Name */}
-                            <div className="align-self-center" style={{ cursor: "pointer" }} onClick={() => setSearchTerm("")}>
-                                <Typography variant="h6" component="div">WaveStream</Typography> 
+                            <div className="align-self-center">
+                              {/* Refresh Token Button */} 
+                              <Typography variant="h6" component="small" className="me-3" style={{ cursor: "pointer" }} onClick={() => backToHome()}>WaveStream</Typography>
+                              <ToggleButton value="shuffle" selected={shuffleStatus} onChange={() => {shuffleChange(!shuffleStatus)}}><ShuffleIcon /></ToggleButton>
+                              <ToggleButton value="repeat" selected = {repeatStatus === "context" || repeatStatus === "track" ? true : false} onChange={() => {handleRepeat()}}>{repeatStatus !== "track" ? <RepeatIcon /> : <RepeatOneIcon />}</ToggleButton>
                             </div>
                             {/* Search Bar */}
                             <div className="align-self-center">
-                                <TextField hiddenLabel id="filled-hidden-label-small" color="info" placeholder="Search for a song, artist or album" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} variant="standard" size="small" sx={{ minWidth: 500, input: { color: 'white' } }} />
+                              <TextField hiddenLabel id="filled-hidden-label-small" color="info" placeholder="Search for a song, artist or album" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} variant="standard" size="small" sx={{ minWidth: 500, input: { color: 'white' } }} />
                             </div>
-                            {/* Refresh Token Button */}
+                            {/* User */}
                             <div className="align-self-center">
-                                <Button color="inherit" href={authorizeURL} disabled></Button> 
+                              {/* Refresh Token Button */}
+                              <Button color="inherit" href={authorizeURL}>Refresh Token</Button> 
+                              {/* View Playlist Button */}
+                              <Button color="inherit" className="me-3" onClick={() => onSetPlaylistPage(true)}>View Playlists</Button>
+                              <Typography variant="overline">{username}</Typography> 
                             </div>
                         </div>
                     </div>

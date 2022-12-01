@@ -7,7 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 
-export default function AlbumDetails({album, isDialogOpened, handleCloseDialog, chooseTrack}) {
+export default function ArtistDetails({album, isDialogOpened, handleCloseDialog, chooseTrack}) {
 
   const format = require('format-duration')
 
@@ -67,17 +67,20 @@ export default function AlbumDetails({album, isDialogOpened, handleCloseDialog, 
           {
             album.tracks.map((track, index) => {
               return (
-                <div className="m-2" style={{ cursor: "pointer" }} onClick={() => handlePlay(track)}>
-                  <div className="row">
-                    <div className="ml-3 col-11">
-                      <div>{track.name}</div>
-                      <div className="text-muted">{track.artist}</div>
-                    </div>
-                    <div className="col-1">
-                      <div>{format(track.duration)}</div>
+                // <div className="d-flex m-2 align-items-center" style={{ cursor: "pointer" }} onClick={() => handlePlay(track)}>
+                  <div className="m-2" style={{ cursor: "pointer" }} onClick={() => handlePlay(track)}>
+                    <div className="row">
+                      <div className="ml-3 col-11">
+                        <div>{track.name}</div>
+                        <div className="text-muted">{track.artist}</div>
+                      </div>
+                      <div className="col-1">
+                        <div>{format(track.duration)}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                  
+                // </div>
               )
             })
           }

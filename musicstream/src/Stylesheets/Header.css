@@ -7,3 +7,11 @@
 .MuiInput-root:after {
     opacity: 0%;
 }
+.MuiToggleButton-root {
+    background-color: transparent !important;
+    color:rgba(255, 255, 255, 0.233) !important;
+    border: 0px !important;
+}
+.MuiToggleButton-root.Mui-selected {
+    color:#ffffff !important;
+}

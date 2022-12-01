@@ -1,24 +1,39 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Dialog from '@mui/material/Dialog';
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
+import Button from '@mui/material/Button';
+import { Typography } from '@mui/material';
+import spotifyWebApi from 'spotify-web-api-node';
 
-export default function AlbumDetails({album, isDialogOpened, handleCloseDialog, chooseTrack}) {
+const spotifyApi = new spotifyWebApi({
+  clientId: '24a3298301624748953767abdf60ec0a'
+});
+
+export default function PlaylistDetails({playlist, isDialogOpened, handleCloseDialog, chooseTrack, accessToken}) {
 
   const format = require('format-duration')
 
   const [fullWidth, setFullWidth] = useState(true);
   const [maxWidth] = useState("lg");
 
+  useEffect(() => {
+    if (!accessToken) return;
+    spotifyApi.setAccessToken(accessToken);
+  }, [accessToken])
+
   const handleClose = () => {
     handleCloseDialog(false);
   };
 
-  function handlePlay(track) {
+  const handleRemoveFromPlaylist = (track_uri) => {
+    // var track = [{ uri: track_uri}]
+    // spotifyApi.removeTracksFromPlaylist(playlist.id, track)
+  }
+
+  const handlePlay = (track) => {
     chooseTrack(track)
   }
 
@@ -37,11 +52,6 @@ export default function AlbumDetails({album, isDialogOpened, handleCloseDialog, 
     return (
       <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
         {children}
-        {onClose ? (
-          <IconButton aria-label="close" onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}>
-            <CloseIcon />
-          </IconButton>
-        ) : null}
       </DialogTitle>
     );
   }
@@ -56,26 +66,30 @@ export default function AlbumDetails({album, isDialogOpened, handleCloseDialog, 
       <BootstrapDialog fullWidth={fullWidth} maxWidth={maxWidth} open={isDialogOpened} onClose={handleClose} aria-labelledby="max-width-dialog-title">
         <BootstrapDialogTitle>
           <div className="d-flex flex-row bd-highlight mb-3 align-items-center">
-            <img src={album.albumUrl} className="img-thumbnail me-2" alt="" style={{ height: "100px", width: "100px" }} />
+            <img src={playlist.image.url} className="img-thumbnail me-2" alt="" style={{ height: "100px", width: "100px" }} />
             <div className="ms-2">
-              <div>{album.name}</div>
-              <div className="text-muted">{album.artist}</div>
+              <div>{playlist.name}</div>
             </div>
           </div>
         </BootstrapDialogTitle>
         <DialogContent dividers>
           {
-            album.tracks.map((track, index) => {
+            playlist.tracks.map((track, index) => {
               return (
                 <div className="m-2" style={{ cursor: "pointer" }} onClick={() => handlePlay(track)}>
                   <div className="row">
-                    <div className="ml-3 col-11">
-                      <div>{track.name}</div>
-                      <div className="text-muted">{track.artist}</div>
-                    </div>
-                    <div className="col-1">
-                      <div>{format(track.duration)}</div>
-                    </div>
+                      <div className="ml-3 col-9">
+                        <div>{track.name}</div>
+                        <div className="text-muted">{track.artist}</div>
+                      </div>
+                      <div className="col-3 align-items-center">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div>
+                            <Button className="me-3" variant="outlined" onClick={() => handleRemoveFromPlaylist(track.uri)}>Remove from playlist</Button>
+                          </div>
+                          <Typography variant="button">{format(track.duration)}</Typography>
+                        </div>
+                      </div>
                   </div>
                 </div>
               )
