@@ -54,7 +54,7 @@ export default function ArtistDetails({album, isDialogOpened, handleCloseDialog,
   return (
     <div>
       <BootstrapDialog fullWidth={fullWidth} maxWidth={maxWidth} open={isDialogOpened} onClose={handleClose} aria-labelledby="max-width-dialog-title">
-        <BootstrapDialogTitle>
+        <BootstrapDialogTitle onClose={handleClose}>
           <div className="d-flex flex-row bd-highlight mb-3 align-items-center">
             <img src={album.albumUrl} className="img-thumbnail me-2" alt="" style={{ height: "100px", width: "100px" }} />
             <div className="ms-2">
@@ -65,22 +65,19 @@ export default function ArtistDetails({album, isDialogOpened, handleCloseDialog,
         </BootstrapDialogTitle>
         <DialogContent dividers>
           {
-            album.tracks.map((track, index) => {
+            album.tracks.map((track) => {
               return (
-                // <div className="d-flex m-2 align-items-center" style={{ cursor: "pointer" }} onClick={() => handlePlay(track)}>
-                  <div className="m-2" style={{ cursor: "pointer" }} onClick={() => handlePlay(track)}>
-                    <div className="row">
-                      <div className="ml-3 col-11">
-                        <div>{track.name}</div>
-                        <div className="text-muted">{track.artist}</div>
-                      </div>
-                      <div className="col-1">
-                        <div>{format(track.duration)}</div>
-                      </div>
+                <div className="m-2" style={{ cursor: "pointer" }} onClick={() => handlePlay(track)} key={track.uri}>
+                  <div className="row">
+                    <div className="ml-3 col-11">
+                      <div>{track.name}</div>
+                      <div className="text-muted">{track.artist}</div>
+                    </div>
+                    <div className="col-1">
+                      <div>{format(track.duration)}</div>
                     </div>
                   </div>
-                  
-                // </div>
+                </div>
               )
             })
           }

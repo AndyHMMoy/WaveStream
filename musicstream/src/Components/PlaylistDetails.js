@@ -64,7 +64,7 @@ export default function PlaylistDetails({playlist, isDialogOpened, handleCloseDi
   return (
     <div>
       <BootstrapDialog fullWidth={fullWidth} maxWidth={maxWidth} open={isDialogOpened} onClose={handleClose} aria-labelledby="max-width-dialog-title">
-        <BootstrapDialogTitle>
+        <BootstrapDialogTitle onClose={handleClose}>
           <div className="d-flex flex-row bd-highlight mb-3 align-items-center">
             <img src={playlist.image.url} className="img-thumbnail me-2" alt="" style={{ height: "100px", width: "100px" }} />
             <div className="ms-2">
@@ -74,9 +74,9 @@ export default function PlaylistDetails({playlist, isDialogOpened, handleCloseDi
         </BootstrapDialogTitle>
         <DialogContent dividers>
           {
-            playlist.tracks.map((track, index) => {
+            playlist.tracks.map((track) => {
               return (
-                <div className="m-2" style={{ cursor: "pointer" }} onClick={() => handlePlay(track)}>
+                <div className="m-2" style={{ cursor: "pointer" }} onClick={() => handlePlay(track)} key={track.uri}>
                   <div className="row">
                       <div className="ml-3 col-9">
                         <div>{track.name}</div>
