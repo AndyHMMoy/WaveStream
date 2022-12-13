@@ -14,7 +14,7 @@ export default function ArtistSearchResult({ artist, chooseTrack }) {
       <Card.Img className="g-0 btn" variant="top" src={artist.artistUrl} style={{ height: "188px", width: "200px" }} />
       <Card.Body className="d-flex flex-column align-items-center btn" onClick={viewArtistDetails}>
         {isShown && (
-          <ArtistDetails isDialogOpened={isShown} handleCloseDialog={() => setIsShown(false)} album={album} chooseTrack={chooseTrack}/>
+          <ArtistDetails isDialogOpened={true} handleCloseDialog={() => setIsShown(false)} album={artist} chooseTrack={chooseTrack}/>
         )}
         <div className="col-12 text-truncate">{artist.name}</div>
       </Card.Body>

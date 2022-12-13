@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -6,26 +6,30 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import RepeatIcon from '@mui/icons-material/Repeat';
 import RepeatOneIcon from '@mui/icons-material/RepeatOne';
 import spotifyWebApi from 'spotify-web-api-node';
 import React from 'react';
 import '../Stylesheets/Header.css';
+import SpotifyAccessContext from '../Contexts/SpotifyAccessContext';
+import useSearchResult from '../Hooks/useSearchResult';
+import PlaybackSettingsContext from '../Contexts/PlaybackSettingsContext';
 
 const spotifyApi = new spotifyWebApi({
     clientId: '24a3298301624748953767abdf60ec0a'
 });
 
-export default function Header({ accessToken, onTrackQuery, onArtistQuery, onAlbumQuery, onSetPlaylistPage, termChange, shuffleChange, shuffleStatus, repeatChange, repeatStatus }) { 
+export default function Header({ onTrackQuery, onArtistQuery, onAlbumQuery, onSetPlaylistPage, termChange }) { 
 
+    const {accessToken, username, spotifyApi} = useContext(SpotifyAccessContext);
+
+    const {isShuffle, setIsShuffle, repeatStatus, setRepeatStatus} = useContext(PlaybackSettingsContext);
+    
     const [searchTerm, setSearchTerm] = useState('');
     const [trackSearchResults, setTrackSearchResults] = useState([]);
     const [artistSearchResults, setArtistSearchResults] = useState([]);
     const [albumSearchResults, setAlbumSearchResults] = useState([]);
-    const [username, setUsername] = useState([]);
-
 
     // Create the authorization URL
     var authorizeURL = "https://accounts.spotify.com/en/authorize?client_id=24a3298301624748953767abdf60ec0a&response_type=code&redirect_uri=http://localhost:3000&scope=streaming%20user-read-email%20user-top-read%20playlist-read-private%20playlist-read-collaborative%20user-read-private%20user-library-read%20user-library-modify%20user-read-playback-state%20user-modify-playback-state";
@@ -37,21 +41,13 @@ export default function Header({ accessToken, onTrackQuery, onArtistQuery, onAlb
 
     const handleRepeat = () => {
       if (repeatStatus === "off") {
-        repeatChange("context");
+        setRepeatStatus("context");
       } else if (repeatStatus === "context") {
-        repeatChange("track");
+        setRepeatStatus("track");
       } else {
-        repeatChange("off");
+        setRepeatStatus("off");
       }
     }
-
-    useEffect(() => {
-      if (!accessToken) return;
-      spotifyApi.setAccessToken(accessToken)
-      spotifyApi.getMe().then(res => {
-        setUsername(res.body.id);
-      })
-    }, [accessToken])
 
     useEffect(() => {
       termChange(searchTerm);
@@ -151,7 +147,7 @@ export default function Header({ accessToken, onTrackQuery, onArtistQuery, onAlb
                             <div className="align-self-center">
                               {/* Refresh Token Button */} 
                               <Typography variant="h6" component="small" className="me-3" style={{ cursor: "pointer" }} onClick={() => backToHome()}>WaveStream</Typography>
-                              <ToggleButton value="shuffle" selected={shuffleStatus} onChange={() => {shuffleChange(!shuffleStatus)}}><ShuffleIcon /></ToggleButton>
+                              <ToggleButton value="shuffle" selected={isShuffle} onChange={() => {setIsShuffle(!isShuffle)}}><ShuffleIcon /></ToggleButton>
                               <ToggleButton value="repeat" selected = {repeatStatus === "context" || repeatStatus === "track" ? true : false} onChange={() => {handleRepeat()}}>{repeatStatus !== "track" ? <RepeatIcon /> : <RepeatOneIcon />}</ToggleButton>
                             </div>
                             {/* Search Bar */}
