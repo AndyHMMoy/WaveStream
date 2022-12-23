@@ -14,8 +14,8 @@ code {
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 12px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-thumb {
   background-color: rgba(27, 27, 27, .4);

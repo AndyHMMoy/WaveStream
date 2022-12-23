@@ -9,30 +9,23 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import RepeatIcon from '@mui/icons-material/Repeat';
 import RepeatOneIcon from '@mui/icons-material/RepeatOne';
-import spotifyWebApi from 'spotify-web-api-node';
 import React from 'react';
 import '../Stylesheets/Header.css';
 import SpotifyAccessContext from '../Contexts/SpotifyAccessContext';
-import useSearchResult from '../Hooks/useSearchResult';
 import PlaybackSettingsContext from '../Contexts/PlaybackSettingsContext';
+import SearchTermContext from '../Contexts/SearchTermContext';
+import useSearchResult from '../Hooks/useSearchResult';
 
-const spotifyApi = new spotifyWebApi({
-    clientId: '24a3298301624748953767abdf60ec0a'
-});
-
-export default function Header({ onTrackQuery, onArtistQuery, onAlbumQuery, onSetPlaylistPage, termChange }) { 
+export default function Header({ onTrackQuery, onArtistQuery, onAlbumQuery, onSetPlaylistPage }) { 
 
     const {accessToken, username, spotifyApi} = useContext(SpotifyAccessContext);
-
+    const {searchTerm, setSearchTerm} = useContext(SearchTermContext);
     const {isShuffle, setIsShuffle, repeatStatus, setRepeatStatus} = useContext(PlaybackSettingsContext);
-    
-    const [searchTerm, setSearchTerm] = useState('');
-    const [trackSearchResults, setTrackSearchResults] = useState([]);
-    const [artistSearchResults, setArtistSearchResults] = useState([]);
-    const [albumSearchResults, setAlbumSearchResults] = useState([]);
+
+    const searchResults = useSearchResult(searchTerm, setSearchTerm, onSetPlaylistPage, spotifyApi, accessToken);
 
     // Create the authorization URL
-    var authorizeURL = "https://accounts.spotify.com/en/authorize?client_id=24a3298301624748953767abdf60ec0a&response_type=code&redirect_uri=http://localhost:3000&scope=streaming%20user-read-email%20user-top-read%20playlist-read-private%20playlist-read-collaborative%20user-read-private%20user-library-read%20user-library-modify%20user-read-playback-state%20user-modify-playback-state";
+    const authorizeURL = "https://accounts.spotify.com/en/authorize?client_id=24a3298301624748953767abdf60ec0a&response_type=code&redirect_uri=http://localhost:3000&scope=streaming%20user-read-email%20user-top-read%20playlist-read-private%20playlist-read-collaborative%20user-read-private%20user-library-read%20user-library-modify%20user-read-playback-state%20user-modify-playback-state";
 
     const backToHome = () => {
       setSearchTerm("")
@@ -50,92 +43,10 @@ export default function Header({ onTrackQuery, onArtistQuery, onAlbumQuery, onSe
     }
 
     useEffect(() => {
-      termChange(searchTerm);
-      if (searchTerm !== '') {
-        onSetPlaylistPage(false)
-      }
-      if (!searchTerm) return setTrackSearchResults([]), setArtistSearchResults([]), setAlbumSearchResults([])
-      if (!accessToken) return
-  
-      let cancel = false
-      spotifyApi.searchTracks(searchTerm).then(res => {
-        if (cancel) return
-        setTrackSearchResults(
-          res.body.tracks.items.map(track => {
-            const largestAlbumImage = track.album.images.reduce(
-              (largest, image) => {
-                if (image.height > largest.height) return image
-                return largest
-              },
-              track.album.images[0]
-            )
-            return {
-              artist: track.artists[0].name,
-              title: track.name,
-              uri: track.uri,
-              albumUrl: largestAlbumImage.url,
-            }
-          })
-        )
-      })
-      onTrackQuery(trackSearchResults);
-      spotifyApi.searchArtists(searchTerm, { limit: 3 }).then(res => {
-        if (cancel) return
-        setArtistSearchResults(
-          res.body.artists.items.map(artist => {
-            const largestArtistImage = artist.images.reduce(
-              (largest, image) => {
-                if (image.height > largest.height) return image
-                return largest
-              },
-              artist.images[0]
-            )
-            return {
-              name: artist.name,
-              uri: artist.uri,
-              artistUrl: largestArtistImage.url,
-              followers: artist.followers.total
-            }
-          })
-        )
-      })
-      onArtistQuery(artistSearchResults);
-      spotifyApi.searchAlbums(searchTerm, { limit: 3 }).then(res => {
-        if (cancel) return
-        setAlbumSearchResults(
-          res.body.albums.items.map(album => {
-            const largestAlbumImage = album.images.reduce(
-              (largest, image) => {
-                if (image.height > largest.height) return image
-                return largest
-              },
-              album.images[0]
-            )
-            var tracks = [];
-            spotifyApi.getAlbumTracks(album.id).then(res => {
-                res.body.items.map(track => {
-                    tracks.push({ 
-                        artist: track.artists[0].name, 
-                        name: track.name, 
-                        uri: track.uri, 
-                        albumUrl: largestAlbumImage.url,
-                        duration: track.duration_ms
-                    });
-                })
-            })
-            return {
-              name: album.name,
-              artist: album.artists[0].name,
-              uri: album.uri,
-              albumUrl: largestAlbumImage.url,
-              tracks: tracks,
-            }
-          })
-        )
-      })
-      onAlbumQuery(albumSearchResults);
-      return () => (cancel = true)
-    }, [searchTerm, accessToken, onTrackQuery])
+      onTrackQuery(searchResults[0]);
+      onArtistQuery(searchResults[1]);
+      onAlbumQuery(searchResults[2]);
+    },[accessToken, searchTerm, searchResults])
 
     return (
         <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-between' }}>
@@ -146,7 +57,7 @@ export default function Header({ onTrackQuery, onArtistQuery, onAlbumQuery, onSe
                             {/* App Name */}
                             <div className="align-self-center">
                               {/* Refresh Token Button */} 
-                              <Typography variant="h6" component="small" className="me-3" style={{ cursor: "pointer" }} onClick={() => backToHome()}>WaveStream</Typography>
+                              <Typography variant="h6" component="small" className="me-3 align-middle" style={{ cursor: "pointer" }} onClick={() => backToHome()}>WaveStream</Typography>
                               <ToggleButton value="shuffle" selected={isShuffle} onChange={() => {setIsShuffle(!isShuffle)}}><ShuffleIcon /></ToggleButton>
                               <ToggleButton value="repeat" selected = {repeatStatus === "context" || repeatStatus === "track" ? true : false} onChange={() => {handleRepeat()}}>{repeatStatus !== "track" ? <RepeatIcon /> : <RepeatOneIcon />}</ToggleButton>
                             </div>

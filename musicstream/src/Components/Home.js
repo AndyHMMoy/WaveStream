@@ -1,5 +1,6 @@
 import Button from '@mui/material/Button';
 import { useState } from 'react';
+import { compose } from 'redux'
 import Header from '../Fragments/Header';
 import Dashboard from './Dashboard';
 import useAuth from '../Hooks/useAuth';
@@ -34,15 +35,18 @@ function Home() {
     <div>
       {code ? 
         <>  
+          {/* <Compose components={[SpotifyAccessContext.Provider value = {{accessToken, username, spotifyApi}}, AuthProvider, ThemeProvider, ChatProvider]}>
+
+          </Compose> */}
           <SpotifyAccessContext.Provider value = {{accessToken, username, spotifyApi}}>
-            <UserDataContext.Provider value = {data}>
-              <SearchTermContext.Provider value = {searchTerm}>
-                <PlaybackSettingsContext.Provider value = {{isShuffle, setIsShuffle, repeatStatus, setRepeatStatus}}>
-                  <Header onTrackQuery = {setTrackSearchResults} onArtistQuery = {setArtistSearchResults} onAlbumQuery = {setAlbumSearchResults} onSetPlaylistPage = {setIsPlaylistPage} termChange = {setSearchTerm} />
-                  <Dashboard trackQuery = {trackSearchResults} artistQuery = {artistSearchResults} albumQuery = {albumSearchResults} playlistPageStatus = {isPlaylistPage} onSetPlaylistPage = {setIsPlaylistPage} term = {searchTerm} />
-                </PlaybackSettingsContext.Provider>
-              </SearchTermContext.Provider>
-            </UserDataContext.Provider>
+            <SearchTermContext.Provider value = {{searchTerm, setSearchTerm}}>
+              <PlaybackSettingsContext.Provider value = {{isShuffle, setIsShuffle, repeatStatus, setRepeatStatus}}>
+                <Header onTrackQuery = {setTrackSearchResults} onArtistQuery = {setArtistSearchResults} onAlbumQuery = {setAlbumSearchResults} onSetPlaylistPage = {setIsPlaylistPage} />
+                <UserDataContext.Provider value = {data}>
+                  <Dashboard trackQuery = {trackSearchResults} artistQuery = {artistSearchResults} albumQuery = {albumSearchResults} playlistPageStatus = {isPlaylistPage} onSetPlaylistPage = {setIsPlaylistPage} />
+                </UserDataContext.Provider>
+              </PlaybackSettingsContext.Provider>
+            </SearchTermContext.Provider>
           </SpotifyAccessContext.Provider>
         </>: 
         <Backdrop open sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} >

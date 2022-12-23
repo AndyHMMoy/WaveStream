@@ -1,11 +1,6 @@
 import { useState, useEffect } from 'react';
-import spotifyWebApi from 'spotify-web-api-node';
 
-const spotifyApi = new spotifyWebApi({
-    clientId: '24a3298301624748953767abdf60ec0a'
-});
-
-export default function useSearchResult (searchTerm, termChange, onSetPlaylistPage, accessToken, onTrackQuery, onArtistQuery, onAlbumQuery) {
+export default function useSearchResult (searchTerm, termChange, onSetPlaylistPage, spotifyApi, accessToken) {
 
     const [trackSearchResults, setTrackSearchResults] = useState([]);
     const [artistSearchResults, setArtistSearchResults] = useState([]);
@@ -16,8 +11,8 @@ export default function useSearchResult (searchTerm, termChange, onSetPlaylistPa
         if (searchTerm !== '') {
           onSetPlaylistPage(false)
         }
-        if (!searchTerm) return setTrackSearchResults([]), setArtistSearchResults([]), setAlbumSearchResults([])
-        if (!accessToken) return
+        if (!searchTerm) return (setTrackSearchResults([]), setArtistSearchResults([]), setAlbumSearchResults([]));
+        if (!accessToken) return;
     
         let cancel = false
         spotifyApi.searchTracks(searchTerm).then(res => {
@@ -35,12 +30,11 @@ export default function useSearchResult (searchTerm, termChange, onSetPlaylistPa
                 artist: track.artists[0].name,
                 title: track.name,
                 uri: track.uri,
-                albumUrl: largestAlbumImage.url,
+                albumUrl: largestAlbumImage?.url,
               }
             })
           )
         })
-        // onTrackQuery(trackSearchResults);
         spotifyApi.searchArtists(searchTerm, { limit: 3 }).then(res => {
           if (cancel) return
           setArtistSearchResults(
@@ -55,13 +49,13 @@ export default function useSearchResult (searchTerm, termChange, onSetPlaylistPa
               return {
                 name: artist.name,
                 uri: artist.uri,
-                artistUrl: largestArtistImage.url,
-                followers: artist.followers.total
+                artistUrl: largestArtistImage?.url,
+                followers: artist.followers.total,
+                id: artist.id
               }
             })
           )
         })
-        // onArtistQuery(artistSearchResults);
         spotifyApi.searchAlbums(searchTerm, { limit: 3 }).then(res => {
           if (cancel) return
           setAlbumSearchResults(
@@ -80,7 +74,7 @@ export default function useSearchResult (searchTerm, termChange, onSetPlaylistPa
                           artist: track.artists[0].name, 
                           name: track.name, 
                           uri: track.uri, 
-                          albumUrl: largestAlbumImage.url,
+                          albumUrl: largestAlbumImage?.url,
                           duration: track.duration_ms
                       });
                   })
@@ -89,15 +83,14 @@ export default function useSearchResult (searchTerm, termChange, onSetPlaylistPa
                 name: album.name,
                 artist: album.artists[0].name,
                 uri: album.uri,
-                albumUrl: largestAlbumImage.url,
+                albumUrl: largestAlbumImage?.url,
                 tracks: tracks,
               }
             })
           )
         })
-        // onAlbumQuery(albumSearchResults);
         return () => (cancel = true)
-    }, [searchTerm, accessToken, onTrackQuery])
+    }, [searchTerm, accessToken])
 
     return [trackSearchResults, artistSearchResults, albumSearchResults]
 }

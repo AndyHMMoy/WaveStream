@@ -54,22 +54,17 @@ BootstrapDialogTitle.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
 
-export default function PlaylistContent({playlist, chooseTrack}) {
+export default function ExpandablePlaylistTile({playlist, chooseTrack}) {
 
   const format = require('format-duration')
 
   const [open, setOpen] = useState(false);
 
-  // useEffect(() => {
-  //   if (!accessToken) return;
-  //   spotifyApi.setAccessToken(accessToken);
-  // }, [accessToken])
-
   const handleAlbumPlay = () => {
     chooseTrack(playlist.tracks);
   }
 
-  const handleClickOpen = (event) => {
+  const handleClickOpen = () => {
     if (open) return;
     setOpen(true);
   };
@@ -88,32 +83,32 @@ export default function PlaylistContent({playlist, chooseTrack}) {
 
   return (
     <Card className="card text-center" style={{ width: '202px', border: "none" }}>
-      <Card.Img className="g-0 btn" variant="top" src={playlist.image.url} onClick={handleAlbumPlay} style={{ height: "188px", width: "200px" }} />
+      <Card.Img id="albumArt" className="g-0 btn" variant="top" src={playlist.image.url} onClick={handleAlbumPlay} style={{ height: "188px", width: "200px" }} />
       <Card.Body className="d-flex flex-column align-items-center btn" onClick={handleClickOpen}>
         <div>
           <BootstrapDialog fullWidth={true} maxWidth={"lg"} open={open} onClose={handleClose} aria-labelledby="max-width-dialog-title">
             <BootstrapDialogTitle id="max-width-dialog-title" onClose={handleClose}>
               <div className="d-flex flex-row bd-highlight mb-3 align-items-center">
-                <img src={playlist.image.url} className="img-thumbnail me-2" alt="" style={{ height: "100px", width: "100px" }} />
+                <img id="albumArt" src={playlist.image.url} className="me-2" alt="" style={{ height: "100px", width: "100px" }} />
                 <div className="ms-2">
                   <div>{playlist.name}</div>
                 </div>
               </div>
             </BootstrapDialogTitle>
-            <DialogContent dividers>
+            <DialogContent dividers sx={{ minHeight: '50vh', maxHeight: '50vh' }}>
               {
                 playlist.tracks.map((track) => {
                   return (
                     <div className="m-2" style={{ cursor: "pointer" }}  key={track.uri}>
                       <div className="row">
-                          <div className="ml-3 col-7" onClick={() => handlePlay(track)}>
+                          <div className="ml-3 col-11" onClick={() => handlePlay(track)}>
                             <div>{track.name}</div>
                             <div className="text-muted">{track.artist}</div>
                           </div>
-                          <div className="col-5 align-items-center">
+                          <div className="col-1 d-flex align-items-center">
                             <div className="d-flex justify-content-between align-items-center">
-                                <AddToPlaylistButton className="me-3" variant="outlined" />
-                                <Button className="me-3" variant="outlined">Remove from playlist</Button>
+                                {/* <AddToPlaylistButton className="me-3" variant="outlined" />
+                                <Button className="me-3" variant="outlined">Remove from playlist</Button> */}
                               <Typography variant="button">{format(track.duration)}</Typography>
                             </div>
                           </div>
