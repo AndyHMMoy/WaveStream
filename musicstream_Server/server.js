@@ -49,4 +49,7 @@ app.post('/login', (req, res) => {
     })
 });
 
-app.listen(3001);
+const port = process.env.PORT || 3031;
+app.listen(port, () => {
+  console.log('Express server listening on port', port)
+});
