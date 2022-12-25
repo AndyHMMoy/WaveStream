@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 app.post('/refresh', (req, res) => {
     const refreshToken = req.body.refreshToken;
     const spotifyApi = new spotifyWebApi({
-        redirectUri: 'http://localhost:3000',
+        redirectUri: 'https://wave-stream.vercel.app',
         clientId: '24a3298301624748953767abdf60ec0a',
         clientSecret: '07c5bee1b987460db3f61f7d0e25d3df',
         refreshToken
@@ -32,7 +32,7 @@ app.post('/refresh', (req, res) => {
 app.post('/login', (req, res) => {
     const code = req.body.code;
     const spotifyApi = new spotifyWebApi({
-        redirectUri: 'http://localhost:3000',
+        redirectUri: 'https://wave-stream.vercel.app',
         clientId: '24a3298301624748953767abdf60ec0a',
         clientSecret: '07c5bee1b987460db3f61f7d0e25d3df'
     })

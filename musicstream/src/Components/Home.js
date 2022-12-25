@@ -1,6 +1,5 @@
 import Button from '@mui/material/Button';
 import { useState } from 'react';
-import { compose } from 'redux'
 import Header from '../Fragments/Header';
 import Dashboard from './Dashboard';
 import useAuth from '../Hooks/useAuth';
@@ -35,9 +34,6 @@ function Home() {
     <div>
       {code ? 
         <>  
-          {/* <Compose components={[SpotifyAccessContext.Provider value = {{accessToken, username, spotifyApi}}, AuthProvider, ThemeProvider, ChatProvider]}>
-
-          </Compose> */}
           <SpotifyAccessContext.Provider value = {{accessToken, username, spotifyApi}}>
             <SearchTermContext.Provider value = {{searchTerm, setSearchTerm}}>
               <PlaybackSettingsContext.Provider value = {{isShuffle, setIsShuffle, repeatStatus, setRepeatStatus}}>
