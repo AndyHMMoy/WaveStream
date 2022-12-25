@@ -85,6 +85,9 @@ export default function useSearchResult (searchTerm, termChange, onSetPlaylistPa
                 uri: album.uri,
                 albumUrl: largestAlbumImage?.url,
                 tracks: tracks,
+                type: album.album_type,
+                total_tracks: album.total_tracks,
+                release_date: album.release_date
               }
             })
           )

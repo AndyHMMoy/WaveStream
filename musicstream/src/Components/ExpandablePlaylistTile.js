@@ -9,12 +9,6 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
 import { Typography } from '@mui/material';
-import spotifyWebApi from 'spotify-web-api-node';
-import AddToPlaylistButton from './AddToPlaylistButton';
-
-const spotifyApi = new spotifyWebApi({
-  clientId: '24a3298301624748953767abdf60ec0a'
-});
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -91,7 +85,9 @@ export default function ExpandablePlaylistTile({playlist, chooseTrack}) {
               <div className="d-flex flex-row bd-highlight mb-3 align-items-center">
                 <img id="albumArt" src={playlist.image.url} className="me-2" alt="" style={{ height: "100px", width: "100px" }} />
                 <div className="ms-2">
-                  <div>{playlist.name}</div>
+                  <Typography variant="h6">{playlist.name}</Typography>
+                  <Typography variant="subtitle1"  className="mb-1">{playlist.description ? playlist.description : "No Description" }</Typography>
+                  <div><Button variant="contained" size="medium" onClick={() => chooseTrack(playlist.tracks)}>Play Album</Button></div>
                 </div>
               </div>
             </BootstrapDialogTitle>

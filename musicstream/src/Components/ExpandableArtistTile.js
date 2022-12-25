@@ -81,7 +81,7 @@ export default function ExpandableArtistTile({artist, chooseTrack}) {
     let cancel = false
 
     const handleGetArtistPlaylists = async () => {
-      await spotifyApi.getArtistAlbums(artist.id).then(res => {
+      await spotifyApi.getArtistAlbums(artist.id, {limit: 50}).then(res => {
         if (cancel) return
         console.log(res.body)
         setAlbums(
@@ -152,7 +152,7 @@ export default function ExpandableArtistTile({artist, chooseTrack}) {
                         <div className="ms-2">
                           <div className="d-flex flex-column">
                             <Typography variant="h6">{album.name}</Typography>
-                            <span className="mb-1">{capitalizeFirstLetter(album.type) + " • " + album.total_tracks + " • " + album.release_date}</span>
+                            <Typography variant="subtitle1" className="mb-1">{capitalizeFirstLetter(album.type) + " • " + album.release_date + " • " + album.total_tracks + (album.total_tracks === 1 ? " song" : " songs")}</Typography>
                             <div><Button variant="contained" size="medium" onClick={() => chooseTrack(album.tracks)}>Play Album</Button></div>
                           </div>
                         </div>

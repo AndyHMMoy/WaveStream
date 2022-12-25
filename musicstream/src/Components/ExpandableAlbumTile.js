@@ -7,6 +7,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import Button from '@mui/material/Button';
 import { Typography } from '@mui/material';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -47,6 +48,10 @@ BootstrapDialogTitle.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
 
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 export default function ExpandableAlbumTile({ album, chooseTrack }) {
 
   const format = require('format-duration')
@@ -84,7 +89,9 @@ export default function ExpandableAlbumTile({ album, chooseTrack }) {
               <div className="d-flex flex-row bd-highlight mb-3 align-items-center">
                 <img id="albumArt" src={album.albumUrl} className="me-2" alt="" style={{ height: "100px", width: "100px" }} />
                 <div className="ms-2">
-                  <div>{album.name}</div>
+                  <Typography variant="h6">{album.name}</Typography>
+                  <Typography variant="subtitle1" className="mb-1">{capitalizeFirstLetter(album.type) + " • " + album.release_date + " • " + album.total_tracks + (album.total_tracks === 1 ? " song" : " songs")}</Typography>
+                  <div><Button variant="contained" size="medium" onClick={() => chooseTrack(album.tracks)}>Play Album</Button></div>
                 </div>
               </div>
             </BootstrapDialogTitle>

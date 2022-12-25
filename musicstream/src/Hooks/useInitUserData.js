@@ -63,7 +63,7 @@ export default function useInitUserData(accessToken) {
                             },
                             res.body.images[0]
                         )
-                        setPlaylists(current => [...current, { image: largestPlaylistImage, name: res.body.name, tracks: tracks, uri: res.body.uri, id: res.body.id }])
+                        setPlaylists(current => [...current, { image: largestPlaylistImage, name: res.body.name, tracks: tracks, uri: res.body.uri, id: res.body.id, description: res.body.description }])
                     })
                 })
             })
@@ -108,7 +108,10 @@ export default function useInitUserData(accessToken) {
                             name: album.name,
                             uri: album.uri,
                             albumUrl: largestAlbumImage.url,
-                            tracks: tracks
+                            tracks: tracks,
+                            type: album.album_type,
+                            total_tracks: album.total_tracks,
+                            release_date: album.release_date
                         }
                     })
                 )
@@ -169,7 +172,10 @@ export default function useInitUserData(accessToken) {
                                 name: album.album.name,
                                 uri: album.album.uri,
                                 albumUrl: largestAlbumImage.url,
-                                tracks: tracks
+                                tracks: tracks,
+                                type: album.album.album_type,
+                                total_tracks: album.album.total_tracks,
+                                release_date: album.album.release_date
                             }
                         } else {
                             return {};
