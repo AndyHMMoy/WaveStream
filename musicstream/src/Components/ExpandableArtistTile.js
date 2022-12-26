@@ -83,7 +83,6 @@ export default function ExpandableArtistTile({artist, chooseTrack}) {
     const handleGetArtistPlaylists = async () => {
       await spotifyApi.getArtistAlbums(artist.id, {limit: 50}).then(res => {
         if (cancel) return
-        console.log(res.body)
         setAlbums(
           res.body.items.map(album => {
             const largestAlbumImage = album.images.reduce(
