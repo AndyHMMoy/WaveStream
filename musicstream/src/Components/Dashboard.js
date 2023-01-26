@@ -13,18 +13,13 @@ import SpotifyAccessContext from '../Contexts/SpotifyAccessContext';
 import PlaybackSettingsContext from '../Contexts/PlaybackSettingsContext';
 import SearchTermContext from '../Contexts/SearchTermContext';
 
-export default function Dashboard({ trackQuery, artistQuery, albumQuery, onSetPlaylistPage, playlistPageStatus }) {
+export default function Dashboard({ trackQuery, artistQuery, albumQuery, onSetPlaylistPage, playlistPageStatus, setPlayingTrack, setPlayingTracks, setIsAlbum, isActiveStatus }) {
 
     const {accessToken, spotifyApi} = useContext(SpotifyAccessContext);
 
     const {isShuffle, repeatStatus} = useContext(PlaybackSettingsContext);
 
     const {searchTerm} = useContext(SearchTermContext);
-
-    const [playingTrack, setPlayingTrack] = useState();
-    const [playingTracks, setPlayingTracks] = useState([]);
-    const [isAlbum, setIsAlbum] = useState(false);
-    const [isActiveStatus, setIsActiveStatus] = useState(false);
 
     function chooseTrack(track) {
         if (Array.isArray(track)) {
@@ -77,9 +72,9 @@ export default function Dashboard({ trackQuery, artistQuery, albumQuery, onSetPl
         <UserDataContext.Consumer>
             {(value) => (
             <div>
-                <Container fluid className="d-flex flex-column justify-content-center py-2 px-4" style={{ height: "93vh" }}>
+                <Container fluid className="d-flex flex-column justify-content-center py-2 px-4">
                     {!playlistPageStatus ?
-                        <div className="flex-grow-1 my-2" style={{ overflowY: "auto" }}>
+                        <div className="flex-grow-1 my-2">
                             {/* Show results if exist, else show home page of dashboard */}
                             {albumQuery.length > 0 && searchTerm !== '' ? 
                                 <>
@@ -144,21 +139,12 @@ export default function Dashboard({ trackQuery, artistQuery, albumQuery, onSetPl
                         <div className="d-flex justify-content-center">
                             {value[2].map((playlist) => (
                                 <div className="col-3 w-auto mx-auto" key={playlist.uri}>
-                                    {/* <div className="d-flex justify-content-center"> */}
-                                        <ExpandablePlaylistTile playlist={playlist} key={playlist.uri} chooseTrack={chooseTrack}/>
-                                    {/* </div> */}
+                                    <ExpandablePlaylistTile playlist={playlist} key={playlist.uri} chooseTrack={chooseTrack}/>
                                 </div>
                             ))}
                         </div>
                             
                     </div>}
-                    <div>
-                        {!isAlbum ? 
-                            <Player accessToken={accessToken} track={playingTrack} isActive = {setIsActiveStatus} />
-                            :
-                            <Player accessToken={accessToken} track={playingTracks} isActive = {setIsActiveStatus} />
-                        }
-                    </div>
                 </Container>
             </div>
             )}

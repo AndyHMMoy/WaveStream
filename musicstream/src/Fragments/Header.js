@@ -24,7 +24,10 @@ export default function Header({ onTrackQuery, onArtistQuery, onAlbumQuery, onSe
 
     const searchResults = useSearchResult(searchTerm, setSearchTerm, onSetPlaylistPage, spotifyApi, accessToken);
 
-    // Create the authorization URL
+    // Create the development authorization URL
+    // const authorizeURL = "https://accounts.spotify.com/en/authorize?client_id=24a3298301624748953767abdf60ec0a&response_type=code&redirect_uri=http://localhost:3000&scope=streaming%20user-read-email%20user-top-read%20playlist-read-private%20playlist-read-collaborative%20user-read-private%20user-library-read%20user-library-modify%20user-read-playback-state%20user-modify-playback-state";
+
+    // Production URL
     const authorizeURL = "https://accounts.spotify.com/en/authorize?client_id=24a3298301624748953767abdf60ec0a&response_type=code&redirect_uri=https://wave-stream.vercel.app&scope=streaming%20user-read-email%20user-top-read%20playlist-read-private%20playlist-read-collaborative%20user-read-private%20user-library-read%20user-library-modify%20user-read-playback-state%20user-modify-playback-state";
 
     const backToHome = () => {

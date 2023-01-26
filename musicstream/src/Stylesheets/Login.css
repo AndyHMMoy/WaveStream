@@ -1,0 +1,26 @@
+.title {
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    font-size: 30px;
+}
+
+.loginText {
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+}
+
+.loginBox {
+    border: 1px solid #d5d5d5 !important;
+}
+
+.dot {
+    height: 24px;
+    width: 24px;
+    background-color: #fff;
+    border: 1px solid #00d95f !important;
+    border-radius: 50%;
+    display: flex;
+    align-items:center;
+    justify-content:center;
+}

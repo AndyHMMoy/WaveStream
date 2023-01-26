@@ -14,7 +14,7 @@ export default function Player({ accessToken, track, isActive }) {
   if (!accessToken) return null
   return (
     <div>
-      <SpotifyPlayer token={accessToken} syncExternalDeviceInterval = {1} styles = {{ sliderHandleColor: "#ffffff", sliderColor: "#3f50b5" }} callback={state => {
+      <SpotifyPlayer token={accessToken} syncExternalDeviceInterval = {1} styles = {{ sliderHandleColor: "#ffffff", sliderColor: "#3f50b5", bgColor: "#f2f2f2" }} callback={state => {
           if (!state.isPlaying) {
             setPlay(false);
           } 
